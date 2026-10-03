@@ -22,6 +22,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import android.media.projection.MediaProjectionConfig
+import android.media.projection.MediaProjectionManager
+import io.github.jqssun.airplay.screen.ScreenMirrorController
+import io.github.jqssun.airplay.screen.ScreenMirrorService
 import io.github.jqssun.airplay.service.AirPlayService
 import io.github.jqssun.airplay.ui.MainScreen
 import io.github.jqssun.airplay.ui.theme.AirPlayTheme
@@ -60,6 +64,30 @@ class MainActivity : ComponentActivity() {
     private val notifPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { /* granted or not, service works either way */ }
+
+    private val screenCapture = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val data = result.data
+        if (result.resultCode == RESULT_OK && data != null) {
+            ScreenMirrorService.start(this, result.resultCode, data)
+        }
+    }
+
+    private fun toggleScreenMirror() {
+        if (ScreenMirrorController.projecting.value) {
+            ScreenMirrorService.stop(this)
+            return
+        }
+        val manager = getSystemService(MediaProjectionManager::class.java)
+        // whole screen only: a single-app capture is useless in the car
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            manager.createScreenCaptureIntent(MediaProjectionConfig.createConfigForDefaultDisplay())
+        } else {
+            manager.createScreenCaptureIntent()
+        }
+        screenCapture.launch(intent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,7 +140,8 @@ class MainActivity : ComponentActivity() {
                     isInPip = isInPip.value,
                     onSurfaceAvailable = { viewModel.onSurfaceAvailable(it) },
                     onSurfaceDestroyed = { viewModel.onSurfaceDestroyed(it) },
-                    onPip = { enterPip() }
+                    onPip = { enterPip() },
+                    onToggleScreenMirror = { toggleScreenMirror() }
                 )
             }
         }

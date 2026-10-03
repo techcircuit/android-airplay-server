@@ -196,4 +196,15 @@
     <string name="car_waiting_title">iPhone bekleniyor</string>
     <string name="car_connect_hint">iPhone\'da Denetim Merkezi → Ekran Yansıtma → bu telefonu seçin</string>
     <string name="car_stop">Durdur</string>
+    <string name="car_source_question">Araç ekranında ne gösterilsin?</string>
+    <string name="car_source_iphone">iPhone (AirPlay)</string>
+    <string name="car_source_android">Bu telefonun ekranı</string>
+    <string name="car_source_change">Kaynak</string>
+    <string name="car_screen_waiting_title">Telefon ekranı bekleniyor</string>
+    <string name="car_screen_hint">Telefonda uygulamayı açın, \"Android ekranını yansıt\"a dokunun ve \"Tüm ekran\"ı seçin</string>
+    <string name="screen_mirror_title">Android ekranını yansıt</string>
+    <string name="screen_mirror_desc">Bu telefonun ekranını Android Auto araç ekranına gönderir</string>
+    <string name="screen_mirror_active">Telefon ekranı araca yansıtılıyor</string>
+    <string name="screen_mirror_notification">Ekran araç ekranına yansıtılıyor</string>
+    <string name="screen_mirror_channel">Ekran yansıtma</string>
 </resources>

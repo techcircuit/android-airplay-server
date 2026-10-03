@@ -17,6 +17,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.automirrored.filled.ScreenShare
+import androidx.compose.material.icons.automirrored.filled.StopScreenShare
 import androidx.compose.material.icons.automirrored.rounded.VolumeDown
 import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
@@ -47,6 +49,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import io.github.jqssun.airplay.R
+import io.github.jqssun.airplay.screen.ScreenMirrorController
 import io.github.jqssun.airplay.service.AirPlayService.ServerState
 import io.github.jqssun.airplay.ui.gestures.BrightnessState
 import io.github.jqssun.airplay.ui.gestures.DoubleTapIndicator
@@ -88,7 +91,8 @@ fun MainScreen(
     isInPip: Boolean = false,
     onSurfaceAvailable: (android.view.Surface) -> Unit,
     onSurfaceDestroyed: (android.view.Surface) -> Unit,
-    onPip: () -> Unit = {}
+    onPip: () -> Unit = {},
+    onToggleScreenMirror: () -> Unit = {}
 ) {
     var tab by remember { mutableStateOf(Tab.OVERVIEW) }
     var fullscreen by remember { mutableStateOf(false) }
@@ -535,7 +539,8 @@ fun MainScreen(
             Box(modifier = Modifier.padding(padding)) {
                 TabContent(
                     tab, viewModel, video,
-                    onFullscreen = { fullscreen = true }, onPip = onPip, showAudioMode = audioOnly
+                    onFullscreen = { fullscreen = true }, onPip = onPip, showAudioMode = audioOnly,
+                    onToggleScreenMirror = onToggleScreenMirror
                 )
             }
         }
@@ -569,12 +574,14 @@ private fun TabContent(
     video: @Composable () -> Unit,
     onFullscreen: () -> Unit,
     onPip: () -> Unit,
-    showAudioMode: Boolean
+    showAudioMode: Boolean,
+    onToggleScreenMirror: () -> Unit
 ) {
     when (tab) {
         Tab.OVERVIEW -> OverviewContent(
             viewModel, video,
-            onFullscreen = onFullscreen, onPip = onPip, showAudioMode = showAudioMode
+            onFullscreen = onFullscreen, onPip = onPip, showAudioMode = showAudioMode,
+            onToggleScreenMirror = onToggleScreenMirror
         )
         Tab.LOGS -> LogsScreen(viewModel)
         Tab.SETTINGS -> SettingsScreen(viewModel)
@@ -587,7 +594,8 @@ private fun OverviewContent(
     video: @Composable () -> Unit,
     onFullscreen: () -> Unit,
     onPip: () -> Unit,
-    showAudioMode: Boolean = false
+    showAudioMode: Boolean = false,
+    onToggleScreenMirror: () -> Unit = {}
 ) {
     val state by viewModel.serverState.collectAsState()
     val connections by viewModel.connectionCount.collectAsState()
@@ -745,7 +753,45 @@ private fun OverviewContent(
                         Text(if (state == ServerState.RUNNING) stringResource(R.string.btn_stop) else stringResource(R.string.btn_start))
                     }
                 }
+                if (!tv) {
+                    Spacer(Modifier.height(16.dp))
+                    ScreenMirrorRow(onToggleScreenMirror)
+                }
             }
+        }
+    }
+}
+
+// Android Auto: send this phone's own screen to the car instead of an iPhone
+@Composable
+private fun ScreenMirrorRow(onToggle: () -> Unit) {
+    val projecting by ScreenMirrorController.projecting.collectAsState()
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(
+                text = stringResource(R.string.screen_mirror_title),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = stringResource(if (projecting) R.string.screen_mirror_active else R.string.screen_mirror_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (projecting) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        FilledTonalButton(onClick = onToggle, modifier = Modifier.dpadFocus()) {
+            Icon(
+                imageVector = if (projecting) Icons.AutoMirrored.Filled.StopScreenShare else Icons.AutoMirrored.Filled.ScreenShare,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(if (projecting) stringResource(R.string.btn_stop) else stringResource(R.string.btn_start))
         }
     }
 }

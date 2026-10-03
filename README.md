@@ -47,9 +47,18 @@ AirPlay için iPhone ile Android telefonun aynı ağda olması gerekir. Araçta 
 ### 4. Araçta yansıtmayı başlatın
 
 1. Telefonu araca bağlayın ve Android Auto ekranından uygulamayı açın.
-2. Araç ekranında çıkan "Araç park hâlinde mi?" sorusunu **Evet, park hâlindeyim** ile onaylayın. AirPlay sunucusu başlamazsa uygulamayı telefonda bir kez açın.
-3. iPhone'da **Denetim Merkezi → Ekran Yansıtma** bölümünden bu telefonu seçin.
-4. Görüntü araç ekranında en-boy oranı korunarak gösterilir. Yansıtmayı bitirmek için araç ekranındaki **Durdur** düğmesine basın; bir sonraki açılışta park onayı tekrar istenir.
+2. Araç ekranında çıkan "Araç park hâlinde mi?" sorusunu **Evet, park hâlindeyim** ile onaylayın.
+3. Kaynağı seçin: **iPhone (AirPlay)** ya da **Bu telefonun ekranı**. Araç ekranındaki **Kaynak** düğmesiyle istediğiniz zaman değiştirebilirsiniz.
+4. iPhone seçtiyseniz: iPhone'da **Denetim Merkezi → Ekran Yansıtma** bölümünden bu telefonu seçin. AirPlay sunucusu başlamazsa uygulamayı telefonda bir kez açın.
+5. Görüntü araç ekranında en-boy oranı korunarak gösterilir. Yansıtmayı bitirmek için araç ekranındaki **Durdur** düğmesine basın; bir sonraki açılışta park onayı tekrar istenir.
+
+### Android telefonun kendi ekranını yansıtma
+
+iPhone olmadan, Android telefonun kendi ekranını da araca gönderebilirsiniz:
+
+1. Araç ekranında park onayından sonra **Bu telefonun ekranı**'nı seçin.
+2. Telefonda uygulamayı açın, **Android ekranını yansıt** satırındaki **Başlat**'a dokunun ve çıkan pencerede **Tüm ekran**'ı seçin. Ekran yakalama izni Android gereği yalnızca telefonda verilebilir.
+3. Telefon ekranı araç ekranında görünür. Telefondaki bildirimden ya da aynı satırdaki **Durdur** ile yakalamayı kapatabilirsiniz. DRM korumalı içerik (Netflix vb.) siyah görünebilir.
 
 ### Kablolu Android Auto önerilir
 

@@ -4,7 +4,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.Surface
 import androidx.car.app.AppManager
@@ -16,15 +18,18 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import io.github.jqssun.airplay.screen.ScreenMirrorController
 import io.github.jqssun.airplay.service.AirPlayService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
-// owns the car surface, the park consent and the AirPlayService binding;
-// mirrored video goes to the car surface only while all three are present
+// owns the car surface, the park consent, the chosen source and the AirPlayService binding;
+// the car surface is handed to the chosen source only after park consent
 class AirPlayCarSession : Session() {
+
+    enum class Source { IPHONE, ANDROID }
 
     private val _service = MutableStateFlow<AirPlayService?>(null)
     val service = _service.asStateFlow()
@@ -32,9 +37,16 @@ class AirPlayCarSession : Session() {
     private val _parkConfirmed = MutableStateFlow(false)
     val parkConfirmed = _parkConfirmed.asStateFlow()
 
+    private val _source = MutableStateFlow<Source?>(null)
+    val source = _source.asStateFlow()
+
     private var carSurface: Surface? = null
+    private var carWidth = 0
+    private var carHeight = 0
+    private var carDpi = 0
     private var attached: Surface? = null
     private var bound = false
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
@@ -52,11 +64,15 @@ class AirPlayCarSession : Session() {
         override fun onSurfaceAvailable(container: SurfaceContainer) {
             _detach()
             carSurface = container.surface
+            carWidth = container.width
+            carHeight = container.height
+            carDpi = container.dpi
             _updateBinding()
         }
 
         override fun onSurfaceDestroyed(container: SurfaceContainer) {
             _detach()
+            ScreenMirrorController.setTarget(null)
             carSurface = null
         }
     }
@@ -81,9 +97,12 @@ class AirPlayCarSession : Session() {
             }
 
             override fun onDestroy(owner: LifecycleOwner) {
+                mainHandler.removeCallbacks(attachScreenMirror)
                 _detach()
+                ScreenMirrorController.setTarget(null)
                 carSurface = null
                 _parkConfirmed.value = false
+                _source.value = null
                 if (bound) {
                     carContext.unbindService(connection)
                     bound = false
@@ -96,6 +115,7 @@ class AirPlayCarSession : Session() {
     override fun onCreateScreen(intent: Intent): Screen {
         // ask again on every Android Auto connection
         _parkConfirmed.value = false
+        _source.value = null
         return AirPlayCarScreen(carContext, this)
     }
 
@@ -104,9 +124,15 @@ class AirPlayCarSession : Session() {
         _updateBinding()
     }
 
+    fun selectSource(source: Source?) {
+        _source.value = source
+        _updateBinding()
+    }
+
     fun stop() {
         _parkConfirmed.value = false
-        _detach()
+        _source.value = null
+        _updateBinding()
     }
 
     private fun _startServer() {
@@ -122,11 +148,28 @@ class AirPlayCarSession : Session() {
     }
 
     private fun _updateBinding() {
-        val svc = _service.value ?: return
-        val surface = carSurface ?: return
-        if (!_parkConfirmed.value || attached === surface) return
-        svc.setVideoSurface(surface, letterbox = true)
-        attached = surface
+        mainHandler.removeCallbacks(attachScreenMirror)
+        val source = _source.value.takeIf { _parkConfirmed.value }
+        if (source != Source.IPHONE) _detach()
+        if (source != Source.ANDROID) ScreenMirrorController.setTarget(null)
+        when (source) {
+            Source.IPHONE -> {
+                val svc = _service.value ?: return
+                val surface = carSurface ?: return
+                if (attached === surface) return
+                svc.setVideoSurface(surface, letterbox = true)
+                attached = surface
+            }
+            // the AirPlay GL thread lets go of the surface asynchronously; give it a moment before the VirtualDisplay connects
+            Source.ANDROID -> mainHandler.postDelayed(attachScreenMirror, SURFACE_HANDOVER_MS)
+            null -> Unit
+        }
+    }
+
+    private val attachScreenMirror = Runnable {
+        if (_parkConfirmed.value && _source.value == Source.ANDROID) {
+            ScreenMirrorController.setTarget(carSurface, carWidth, carHeight, carDpi)
+        }
     }
 
     private fun _detach() {
@@ -137,5 +180,6 @@ class AirPlayCarSession : Session() {
 
     companion object {
         private const val TAG = "AirPlayCarSession"
+        private const val SURFACE_HANDOVER_MS = 300L
     }
 }
