@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- Android Auto: navigation apps get a raw Surface on the car display -->
@@ -58,6 +59,12 @@
         <service
             android:name=".service.AirPlayService"
             android:foregroundServiceType="connectedDevice|mediaPlayback"
+            android:exported="false" />
+
+        <!-- captures this phone's own screen for the car display -->
+        <service
+            android:name=".screen.ScreenMirrorService"
+            android:foregroundServiceType="mediaProjection"
             android:exported="false" />
 
         <service
