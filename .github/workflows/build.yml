@@ -24,6 +24,14 @@ jobs:
           chmod +x ./gradlew
           ./gradlew assembleRelease --stacktrace
 
+      - name: Show APK manifest
+        run: |
+          AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
+          APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          "$AAPT2" dump badging "$APK"
+          "$AAPT2" dump xmltree --file AndroidManifest.xml "$APK"
+          "$AAPT2" dump xmltree --file res/xml/automotive_app_desc.xml "$APK" || true
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
