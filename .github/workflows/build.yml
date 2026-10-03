@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,3 +32,17 @@ jobs:
           name: carmirror-release
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
+
+      # Rolling "latest" release so the newest main APK has a plain download link:
+      # https://github.com/<owner>/<repo>/releases/download/latest/carmirror.apk
+      - name: Publish latest release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk carmirror.apk
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest carmirror.apk \
+            --target "$GITHUB_SHA" \
+            --title "Car Mirror (latest main)" \
+            --notes "Built from ${GITHUB_SHA::7}. Debug-key signed APK."
