@@ -24,6 +24,7 @@ class VideoPipeline {
     private var window: EGLSurface = EGL14.EGL_NO_SURFACE
     private var winW = 0
     private var winH = 0
+    private var letterbox = false
 
     private var oesTex = 0
     private var program = 0
@@ -38,6 +39,7 @@ class VideoPipeline {
 
     @Volatile private var frameAvailable = false
     private var pendingDisplay: Surface? = null
+    private var pendingLetterbox = false
     private var displayDirty = false
     @Volatile private var videoW = 0
     @Volatile private var videoH = 0
@@ -49,8 +51,10 @@ class VideoPipeline {
         while (inputSurface == null && running) lock.wait()
     }
 
-    fun setDisplaySurface(surface: Surface?) = synchronized(lock) {
+    // letterbox keeps video aspect ratio inside the surface (black bars) instead of stretching to fill it
+    fun setDisplaySurface(surface: Surface?, letterbox: Boolean = false) = synchronized(lock) {
         pendingDisplay = surface
+        pendingLetterbox = letterbox
         displayDirty = true
         lock.notifyAll()
     }
@@ -87,12 +91,14 @@ class VideoPipeline {
         }
         while (true) {
             var newDisplay: Surface? = null
+            var newLetterbox = false
             var displayChanged = false
             var doFrame = false
             synchronized(lock) {
                 while (running && !frameAvailable && !displayDirty) lock.wait()
                 if (running && displayDirty) {
                     newDisplay = pendingDisplay
+                    newLetterbox = pendingLetterbox
                     displayChanged = true
                     displayDirty = false
                 }
@@ -102,14 +108,15 @@ class VideoPipeline {
                 }
             }
             if (!running) break
-            if (displayChanged) _bindDisplay(newDisplay)
+            if (displayChanged) _bindDisplay(newDisplay, newLetterbox)
             if (doFrame) _consumeAndDraw()
         }
         _releaseGl()
     }
 
-    private fun _bindDisplay(surface: Surface?) {
+    private fun _bindDisplay(surface: Surface?, letterbox: Boolean) {
         val egl = egl ?: return
+        this.letterbox = letterbox
         if (window != EGL14.EGL_NO_SURFACE) {
             egl.makeCurrent()
             egl.destroySurface(window)
@@ -146,7 +153,16 @@ class VideoPipeline {
     }
 
     private fun _render() {
-        GLES20.glViewport(0, 0, winW, winH)
+        if (letterbox) {
+            // clear whole window first so bars are black, then draw into the centered viewport
+            GLES20.glViewport(0, 0, winW, winH)
+            GLES20.glClearColor(0f, 0f, 0f, 1f)
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+            val (x, y, w, h) = letterboxViewport(winW, winH, videoW, videoH)
+            GLES20.glViewport(x, y, w, h)
+        } else {
+            GLES20.glViewport(0, 0, winW, winH)
+        }
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glUseProgram(program)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
@@ -220,6 +236,15 @@ class VideoPipeline {
 
     companion object {
         private const val TAG = "VideoPipeline"
+
+        // largest rect with the video's aspect ratio that fits the window, centered: (x, y, w, h)
+        fun letterboxViewport(winW: Int, winH: Int, videoW: Int, videoH: Int): IntArray {
+            if (winW <= 0 || winH <= 0 || videoW <= 0 || videoH <= 0) return intArrayOf(0, 0, winW, winH)
+            val scale = minOf(winW.toFloat() / videoW, winH.toFloat() / videoH)
+            val w = (videoW * scale).toInt().coerceIn(1, winW)
+            val h = (videoH * scale).toInt().coerceIn(1, winH)
+            return intArrayOf((winW - w) / 2, (winH - h) / 2, w, h)
+        }
 
         private val POS = _fb(floatArrayOf(-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f))
         private val TEX = _fb(floatArrayOf(0f, 0f, 1f, 0f, 0f, 1f, 1f, 1f))

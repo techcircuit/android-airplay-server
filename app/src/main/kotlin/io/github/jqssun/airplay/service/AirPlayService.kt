@@ -522,8 +522,8 @@ class AirPlayService : LifecycleService(), RaopCallbackHandler, LogListener {
         log("Server stopped")
     }
 
-    fun setVideoSurface(surface: Surface) {
-        videoRenderer.setSurface(surface)
+    fun setVideoSurface(surface: Surface, letterbox: Boolean = false) {
+        videoRenderer.setSurface(surface, letterbox)
     }
 
     fun clearVideoSurface(surface: Surface) {

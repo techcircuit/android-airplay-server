@@ -136,6 +136,7 @@ dependencies {
     implementation(libs.media3.transformer)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.oboe)
+    implementation(libs.androidx.car.app)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
