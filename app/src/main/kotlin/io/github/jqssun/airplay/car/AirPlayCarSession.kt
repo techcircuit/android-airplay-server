@@ -19,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import io.github.jqssun.airplay.service.AirPlayService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
@@ -73,7 +72,7 @@ class AirPlayCarSession : Session() {
                 // pipeline loses its display when the server restarts, so re-point it on every new mirror session
                 lifecycleScope.launch {
                     _service.collect { svc ->
-                        svc?.mirroringActive?.distinctUntilChanged()?.filter { it }?.collect {
+                        svc?.mirroringActive?.filter { it }?.collect {
                             attached = null
                             _updateBinding()
                         }
