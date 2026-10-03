@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Android Auto: navigation apps get a raw Surface on the car display -->
+    <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
+    <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
 
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -32,6 +35,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AirPlayServer">
 
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="1" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -49,6 +59,15 @@
             android:name=".service.AirPlayService"
             android:foregroundServiceType="connectedDevice|mediaPlayback"
             android:exported="false" />
+
+        <service
+            android:name=".car.AirPlayCarAppService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.NAVIGATION" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".BootReceiver"

@@ -54,9 +54,10 @@ class VideoRenderer(ctx: Context) {
     }
 
     // doesn't restart codec; decoder renders into pipeline's own persistent surface
-    fun setSurface(surface: Surface) = synchronized(lock) {
+    // letterbox keeps the video aspect ratio (used for the car display); default stretches to fill as before
+    fun setSurface(surface: Surface, letterbox: Boolean = false) = synchronized(lock) {
         displaySurface = surface
-        pipeline.setDisplaySurface(surface)
+        pipeline.setDisplaySurface(surface, letterbox)
     }
 
     fun clearSurface(surface: Surface) = synchronized(lock) {

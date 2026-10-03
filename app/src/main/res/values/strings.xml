@@ -186,4 +186,14 @@
     <string name="debug_audio_glitch">Glitch: trim=%1$d drop=%2$d sil=%3$d ur=%4$d xrun=%5$d</string>
     <string name="debug_audio_decode">Decode: %1$s</string>
     <string name="debug_clients">Clients: %1$d</string>
+
+    <!-- Android Auto (car screen) -->
+    <string name="car_park_question">Araç park hâlinde mi? Sürüş sırasında ekranı izlemeyin; sorumluluk sürücüdedir.</string>
+    <string name="car_park_yes">Evet, park hâlindeyim</string>
+    <string name="car_park_no">Hayır</string>
+    <string name="car_declined">Yansıtma kapalı. Araç park hâlindeyken tekrar deneyin.</string>
+    <string name="car_open_app">AirPlay sunucusu çalışmıyor. Telefonda uygulamayı açıp sunucuyu başlatın.</string>
+    <string name="car_waiting_title">iPhone bekleniyor</string>
+    <string name="car_connect_hint">iPhone\'da Denetim Merkezi → Ekran Yansıtma → bu telefonu seçin</string>
+    <string name="car_stop">Durdur</string>
 </resources>

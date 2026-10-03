@@ -12,6 +12,7 @@ datastore = "1.1.1"
 coroutines = "1.9.0"
 media3 = "1.11.0-beta01"
 oboe = "1.9.3"
+car-app = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -40,6 +41,8 @@ media3-transformer = { group = "androidx.media3", name = "media3-transformer", v
 media3-ui-compose-material3 = { group = "androidx.media3", name = "media3-ui-compose-material3", version.ref = "media3" }
 
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+androidx-car-app = { group = "androidx.car.app", name = "app", version.ref = "car-app" }
 
 oboe = { group = "com.google.oboe", name = "oboe", version.ref = "oboe" }
 
