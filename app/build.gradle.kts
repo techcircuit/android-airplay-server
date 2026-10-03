@@ -31,8 +31,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "io.github.jqssun.airplay"
-        minSdk = 24
+        applicationId = "com.example.carmirror"
+        minSdk = 29
         targetSdk = 36
         versionCode = 31
         versionName = "0.0.31"
@@ -58,7 +58,8 @@ android {
         release {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfigs.findByName("release")?.let { signingConfig = it }
+            // Without a release keystore (e.g. CI), sign with the debug key so the APK is installable.
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             ndk { abiFilters += allAbis }
         }
         // debuggable build with HWASan (arm64) + UBSan in native code
