@@ -14,6 +14,47 @@ A fully featured free and open-source implementation of AirPlay for Android that
 
 <video loop src='https://github.com/user-attachments/assets/79ed7c0c-0102-43cc-8816-4f00ce6a4199' alt="demo" width="200" style="display: block; margin: auto;"></video>
 
+## Türkçe Kurulum (Android Auto ile araç ekranında iPhone yansıtma)
+
+Bu fork, iPhone ekranını AirPlay ile Android telefona yansıtıp görüntüyü Android Auto üzerinden araç ekranında göstermek için hazırlanmıştır. Uygulama Play Store'da yoktur; kişisel kullanım içindir.
+
+> [!WARNING]
+> Görüntü yalnızca araç park hâlindeyken izlenmelidir. Uygulama her Android Auto bağlantısında park onayı ister; sürüş sırasında ekranı izlemeyin, sorumluluk sürücüdedir.
+
+### 1. APK'yı yükleyin
+
+1. GitHub'da **Actions** sekmesinden son başarılı derlemeyi açın ve **Artifacts** bölümündeki APK'yı indirin.
+2. Telefonda APK'yı açın. İstenirse dosyayı açtığınız uygulamaya (tarayıcı, dosya yöneticisi) **Bilinmeyen uygulamaları yükle** izni verin.
+3. Uygulamayı telefonda bir kez açın ve istenen izinleri verin.
+
+### 2. Android Auto geliştirici ayarlarını açın
+
+Play Store dışından yüklenen uygulamalar Android Auto'da varsayılan olarak görünmez. Bunu açmak için:
+
+1. Telefonda **Ayarlar → Bağlı cihazlar → Bağlantı tercihleri → Android Auto** bölümüne girin (bazı telefonlarda doğrudan Android Auto uygulamasını açın).
+2. En alttaki **Sürüm** satırına art arda yaklaşık 10 kez dokunun ve geliştirici modunu onaylayın.
+3. Sağ üstteki üç nokta menüsünden **Geliştirici ayarları**'nı açın.
+4. **Bilinmeyen kaynaklar** (Unknown sources) seçeneğini etkinleştirin.
+5. Android Auto ayarlarında **Başlatıcıyı özelleştir** bölümünden uygulamanın işaretli olduğunu kontrol edin.
+
+### 3. Telefonun hotspot'unu açıp iPhone'u bağlayın
+
+AirPlay için iPhone ile Android telefonun aynı ağda olması gerekir. Araçta en kolay yol Android telefonun hotspot'unu kullanmaktır:
+
+1. Android telefonda **Ayarlar → Ağ ve internet → Hotspot ve tethering → Wi-Fi hotspot**'u açın.
+2. iPhone'da **Ayarlar → Wi-Fi** bölümünden Android telefonun hotspot ağına bağlanın.
+
+### 4. Araçta yansıtmayı başlatın
+
+1. Telefonu araca bağlayın ve Android Auto ekranından uygulamayı açın.
+2. Araç ekranında çıkan "Araç park hâlinde mi?" sorusunu **Evet, park hâlindeyim** ile onaylayın. AirPlay sunucusu başlamazsa uygulamayı telefonda bir kez açın.
+3. iPhone'da **Denetim Merkezi → Ekran Yansıtma** bölümünden bu telefonu seçin.
+4. Görüntü araç ekranında en-boy oranı korunarak gösterilir. Yansıtmayı bitirmek için araç ekranındaki **Durdur** düğmesine basın; bir sonraki açılışta park onayı tekrar istenir.
+
+### Kablolu Android Auto önerilir
+
+Kablosuz Android Auto, telefonun Wi-Fi bağlantısını araçla haberleşmek için kullanır. Birçok telefonda bu durum hotspot ile aynı anda çalışmaz ya da bağlantı kopmalarına ve gecikmeye yol açar. En kararlı sonuç için telefonu araca **USB kablosuyla** bağlayın; böylece telefonun Wi-Fi'ı yalnızca iPhone'un bağlandığı hotspot için kullanılır.
+
 ## Compatibility
 
 - Android 7.0+, including Android TV
