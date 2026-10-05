@@ -37,6 +37,18 @@ Play Store dışından yüklenen uygulamalar Android Auto'da varsayılan olarak 
 4. **Bilinmeyen kaynaklar** (Unknown sources) seçeneğini etkinleştirin.
 5. Android Auto ayarlarında **Başlatıcıyı özelleştir** bölümünden uygulamanın işaretli olduğunu kontrol edin.
 
+#### Uygulama yine görünmüyorsa: Play Store yükleyicisiyle kurun
+
+Google'ın [test belgesine](https://developer.android.com/training/cars/testing) göre **Bilinmeyen kaynaklar** ayarı Android for Cars App Library ile yapılan uygulamalara (bu uygulama dahil) uygulanmaz; Android Auto bu uygulamaları yalnızca güvenilir bir kaynaktan (Play Store) yüklendiyse gösterir. Google'ın resmi yolu Play Console'da **Dahili uygulama paylaşımı** ya da **Dahili test kanalı**dır (Play geliştirici hesabı gerekir). Hesap olmadan çalışan yol, APK'yı "Play Store yükledi" olarak kurmaktır:
+
+- **Bilgisayarla (adb):** Telefonda USB hata ayıklamayı açın, önce eski kurulumu kaldırın, sonra:
+  ```
+  adb install -r -i com.android.vending app-release.apk
+  ```
+- **Bilgisayarsız:** [Shizuku](https://github.com/RikkaApps/Shizuku) (kablosuz hata ayıklama ile başlatılır) ve [Install with Options](https://github.com/zacharee/InstallWithOptions) kurun; APK'yı yüklerken yükleyici paket adını `com.android.vending` yapın. Alternatif: [KingInstaller](https://github.com/fcaronte/KingInstaller).
+
+Kurulumdan sonra Android Auto'yu **Durmaya zorla** yapıp tekrar açın.
+
 ### 3. Telefonun hotspot'unu açıp iPhone'u bağlayın
 
 AirPlay için iPhone ile Android telefonun aynı ağda olması gerekir. Araçta en kolay yol Android telefonun hotspot'unu kullanmaktır:
