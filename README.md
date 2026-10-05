@@ -39,7 +39,7 @@ Play Store dışından yüklenen uygulamalar Android Auto'da varsayılan olarak 
 
 #### Uygulama yine görünmüyorsa: Play Store yükleyicisiyle kurun
 
-Bu uygulama Android Auto'da bir **navigasyon** uygulaması olarak görünür. Android Auto, navigasyon uygulamalarında **Bilinmeyen kaynaklar** açık olsa bile uygulamayı kimin yüklediğine bakar ve tarayıcı ya da dosya yöneticisiyle yüklenenleri gizleyebilir. Çözüm, APK'yı "Play Store yükledi" olarak kurmaktır:
+Google'ın [test belgesine](https://developer.android.com/training/cars/testing) göre **Bilinmeyen kaynaklar** ayarı Android for Cars App Library ile yapılan uygulamalara (bu uygulama dahil) uygulanmaz; Android Auto bu uygulamaları yalnızca güvenilir bir kaynaktan (Play Store) yüklendiyse gösterir. Google'ın resmi yolu Play Console'da **Dahili uygulama paylaşımı** ya da **Dahili test kanalı**dır (Play geliştirici hesabı gerekir). Hesap olmadan çalışan yol, APK'yı "Play Store yükledi" olarak kurmaktır:
 
 - **Bilgisayarla (adb):** Telefonda USB hata ayıklamayı açın, önce eski kurulumu kaldırın, sonra:
   ```
